@@ -1,8 +1,9 @@
 var playsGlobal;
 var invoiceGlobal;
+var globalData;
 function amountFor(aPerformance) {
   let result=0;
-  switch (playFor(aPerformance).type) {
+  switch (aPerformance.play.type) {
     case "tragedy":
       result = 40000;
       if (aPerformance.audience > 30) {
@@ -23,30 +24,41 @@ function amountFor(aPerformance) {
 }
 
 
-function playFor(perf) {
-  return playsGlobal[perf.playID];
+function playFor(aPerformance) {
+  return playsGlobal[aPerformance.playID];
+}
+
+function renderPlainText(data , plays){
+  let result = `Statement for ${data.customer}\n`;
+  for (let perf of data.performances) {
+    result += ` ${perf.play.name}: ${usd(amountFor(perf))}
+(${perf.audience} seats)\n`;
+  }
+  result += `Amount owed is ${usd(totalAmount())}\n`;
+  result += `You earned ${totalVolumeCredits()} credits\n`;
+  return result;
 }
 
 
 function statement (invoice, plays) {
   playsGlobal = plays;
   invoiceGlobal=invoice;
+  const statementData={};
+  statementData.customer=invoice.customer;
+  statementData.performances=invoice.performances.map(enrichPerformance);
+  globalData=statementData;
+  return renderPlainText(statementData,plays);
+}
 
-  let result = `Statement for ${invoice.customer}\n`;
-
-  for (let perf of invoice.performances) {
-    // print line for this order
-    result += ` ${ playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
-  }
-
-  result += `Amount owed is ${usd(totalAmount())}\n`;
-  result += `You earned ${totalVolumeCredits()} credits\n`;
+function enrichPerformance(aPerformance){
+  const result=Object.assign({},aPerformance);
+  result.play=playFor(result);
   return result;
 }
 
 function totalAmount() {
   let result = 0;
-  for (let perf of invoiceGlobal.performances) {
+  for (let perf of globalData.performances) {
     result += amountFor(perf);
   }
   return result;
@@ -54,7 +66,7 @@ function totalAmount() {
 
 function totalVolumeCredits(){
   let volumeCredits = 0;
-  for (let perf of invoiceGlobal.performances) {
+  for (let perf of globalData.performances) {
     volumeCredits += volumeCreditsFor(perf);
   }
   return volumeCredits;
@@ -63,7 +75,7 @@ function totalVolumeCredits(){
 function volumeCreditsFor(aPerformance) {
   let volumeCredits = 0;
   volumeCredits += Math.max(aPerformance.audience - 30, 0);
-  if ("comedy" === playFor(aPerformance).type) volumeCredits +=
+  if ("comedy" === aPerformance.play.type) volumeCredits +=
       Math.floor(aPerformance.audience / 5);
   return volumeCredits;
 }
