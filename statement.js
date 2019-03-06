@@ -29,9 +29,8 @@ function statement (invoice, plays) {
                         minimumFractionDigits: 2 }).format;
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
-    let thisAmount = 0;
 
-    thisAmount = amountFor(play, perf);
+    let thisAmount = amountFor(play, perf);
 
     // add volume credits
     volumeCredits += Math.max(perf.audience - 30, 0);
