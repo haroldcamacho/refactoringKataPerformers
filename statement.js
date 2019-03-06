@@ -1,4 +1,5 @@
 var playsGlobal;
+var invoiceGlobal;
 function amountFor(aPerformance) {
   let result=0;
   switch (playFor(aPerformance).type) {
@@ -29,6 +30,7 @@ function playFor(perf) {
 
 function statement (invoice, plays) {
   playsGlobal = plays;
+  invoiceGlobal=invoice;
 
   let totalAmount = 0;
   let result = `Statement for ${invoice.customer}\n`;
@@ -39,14 +41,19 @@ function statement (invoice, plays) {
     totalAmount += amountFor(perf);
   }
 
-  let volumeCredits = 0;
-  for (let perf of invoice.performances){
-    volumeCredits+=volumeCreditsFor(perf);
-  }
+  let volumeCredits = totalVolumeCredits();
 
   result += `Amount owed is ${usd(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
   return result;
+}
+
+function totalVolumeCredits(){
+  let volumeCredits = 0;
+  for (let perf of invoiceGlobal.performances) {
+    volumeCredits += volumeCreditsFor(perf);
+  }
+  return volumeCredits;
 }
 
 function volumeCreditsFor(aPerformance) {
