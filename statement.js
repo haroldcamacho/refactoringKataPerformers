@@ -32,9 +32,7 @@ function statement (invoice, plays) {
   playsGlobal = plays;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}\n`;
-  const format = new Intl.NumberFormat("en-US",
-                      { style: "currency", currency: "USD",
-                        minimumFractionDigits: 2 }).format;
+
   for (let perf of invoice.performances) {
 
     volumeCredits+=volumeCreditsFor(perf);
@@ -49,12 +47,19 @@ function statement (invoice, plays) {
   return result;
 }
 
-function volumeCreditsFor(perf) {
+function volumeCreditsFor(aPerformance) {
   let volumeCredits = 0;
-  volumeCredits += Math.max(perf.audience - 30, 0);
-  if ("comedy" === playFor(perf).type) volumeCredits +=
-      Math.floor(perf.audience / 5);
+  volumeCredits += Math.max(aPerformance.audience - 30, 0);
+  if ("comedy" === playFor(aPerformance).type) volumeCredits +=
+      Math.floor(aPerformance.audience / 5);
   return volumeCredits;
+}
+
+function  format(aNumber) {
+    return new Intl.NumberFormat("en-US",
+        { style: "currency", currency: "USD",
+          minimumFractionDigits: 2 }).format(aNumber);
+
 }
 
 export default statement;
