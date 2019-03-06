@@ -1,6 +1,7 @@
 var playsGlobal;
 var invoiceGlobal;
 var globalData;
+
 function amountFor(aPerformance) {
   let result=0;
   switch (aPerformance.play.type) {
@@ -18,7 +19,7 @@ function amountFor(aPerformance) {
       result += 300 * aPerformance.audience;
       break;
     default:
-      throw new Error(`unknown type: ${playFor(aPerformance).type}`);
+      throw new Error(`unknown type: ${aPerformance.play.type}`);
   }
   return result;
 }
@@ -31,7 +32,7 @@ function playFor(aPerformance) {
 function renderPlainText(data , plays){
   let result = `Statement for ${data.customer}\n`;
   for (let perf of data.performances) {
-    result += ` ${perf.play.name}: ${usd(amountFor(perf))}
+    result += ` ${perf.play.name}: ${usd(perf.amount)}
 (${perf.audience} seats)\n`;
   }
   result += `Amount owed is ${usd(totalAmount())}\n`;
@@ -53,13 +54,14 @@ function statement (invoice, plays) {
 function enrichPerformance(aPerformance){
   const result=Object.assign({},aPerformance);
   result.play=playFor(result);
+  result.amount=amountFor(result);
   return result;
 }
 
 function totalAmount() {
   let result = 0;
   for (let perf of globalData.performances) {
-    result += amountFor(perf);
+    result += perf.amount;
   }
   return result;
 }
