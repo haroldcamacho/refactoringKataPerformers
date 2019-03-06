@@ -28,9 +28,9 @@ function playFor(perf) {
 
 
 function statement (invoice, plays) {
-  let totalAmount = 0;
   playsGlobal = plays;
-  let volumeCredits = 0;
+
+  let totalAmount = 0;
   let result = `Statement for ${invoice.customer}\n`;
 
   for (let perf of invoice.performances) {
@@ -38,6 +38,8 @@ function statement (invoice, plays) {
     result += ` ${ playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
     totalAmount += amountFor(perf);
   }
+
+  let volumeCredits = 0;
   for (let perf of invoice.performances){
     volumeCredits+=volumeCreditsFor(perf);
   }
