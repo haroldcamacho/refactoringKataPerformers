@@ -59,18 +59,6 @@ function playFor(aPerformance) {
     return playsGlobal[aPerformance.playID];
 }
 
-function amountFor(aPerformance) {
-    return new PerformanceCalculator(aPerformance,
-        playFor(aPerformance)).amount;
-}
-
-function volumeCreditsFor(aPerformance) {
-    let volumeCredits = 0;
-    volumeCredits += Math.max(aPerformance.audience - 30, 0);
-    if ("comedy" === aPerformance.play.type) volumeCredits +=
-        Math.floor(aPerformance.audience / 5);
-    return volumeCredits;
-}
 
 function totalAmount(data) {
     return data.performances.reduce((total, p) => total + p.amount, 0);
