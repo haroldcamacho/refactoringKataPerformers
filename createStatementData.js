@@ -1,7 +1,14 @@
 var playsGlobal;
+
+class PerformanceCalculator {
+    constructor(aPerformance) {
+        this.performance = aPerformance;
+    }
+}
+
 export default function createStatementData(invoice, plays) {
-    const result = {};
     playsGlobal=plays;
+    const result = {};
     result.customer = invoice.customer;
     result.performances = invoice.performances.map(enrichPerformance);
     result.totalAmount = totalAmount(result);
@@ -10,6 +17,7 @@ export default function createStatementData(invoice, plays) {
 }
 
 function enrichPerformance(aPerformance){
+    const calculator = new PerformanceCalculator(aPerformance, playFor(aPerformance));
     const result=Object.assign({},aPerformance);
     result.play=playFor(result);
     result.amount=amountFor(result);
